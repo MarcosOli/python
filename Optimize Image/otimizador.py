@@ -5,9 +5,6 @@ from urllib.parse import urlsplit
 import requests
 tinify.key = '5p5UxEJn7z5jYohyzUzpqeCJ3Ymbadxj'
 
-#tinify.proxy = "http://mvldOliveira@timbrasil.com.br:1B2e3l4l5a@192.168.0.1:8080"
-
-
 pre = os.path.dirname(os.path.realpath(__file__))
 fname = 'links.xlsx'
 path = os.path.join(pre, fname)
@@ -26,5 +23,7 @@ for rx in range(sh.nrows):
     print(url)
     statusCode = page.status_code
     print('Status Code:',statusCode)
+    if statusCode == 404:
+        os.system("pause")
     source = tinify.from_url(url)
     source.to_file(paths[-1])
