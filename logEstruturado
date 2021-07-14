@@ -1,0 +1,95 @@
+import json
+
+
+mensagem = json.loads(input("Cole o log aqui: "))
+#dicionarios
+Dsc_canal = {"1":"APP","2":"PWEB","3":"CAPTIVE PORTAL DE BLOQUEIO","4":"PWEB NOVO","5":"CAPTIVE PORTAL DE CADASTRO","6":"APP EMPRESAS","8":"APP BETA ANTIGO","9":"APP BETA"}
+Dsc_categoria_evento = {"1":"login/acesso","2":"Ativação de conta","3":"Recarga","4":"acesso ao AVI/Chat","5":"mudança de plano","6":"navegação","7":"ativação do cliente",
+                        "8":"atualização cadastral","9":"validação de cartão de credito","10":"opt in/ opt out","11":"portabilidade","12":"Upsell","13":"Pacote Adicional",
+                        "14":"Redução de velocidade","16":"visualização de conta","17":"envio de código de barras SMS","18":"envio de código de barras E-mail","19":"consulta de saldo",
+                        "20":"Solicitação de Crédito Especial","21":"Consulta de consumo de dados","22":"Consulta de Consumo de voz","23":"Consulta de informações de Faturas",
+                        "24":"Downaload de fatura","25":"Solicitar Pagamento de Fatura","26":"Religa em confiança","27":"Solicitação de Franquia adicional ao máster",
+                        "28":"Alteração do tipo de conta","29":"Alteração de forma de pagamento","30":"Atualização de interesses","31":"Avaliação","32":"Consulta Extrato TIM BETA",
+                        "33":"Alteração de senha","34":"Consulta de Protocolo","35":"Solicitação de chamados","36":"Solicitação de Cancelamentos","37":"Consulta de gravações",
+                        "38":"Download de gravações","39":"Solicitação de gravação","40":"elegibilidade de gravação","41":"VAS","42":"Campanha de negociação","43":"TIM Pra Mim","44":"Cancelamento de linha"}
+Dsc_acao_evento = {"1":"login","2":"botao","3":"webview"}
+Dsc_tipo_cliente = {"1":"Admin","2":"Acesso","3":"CpfCnpj"}
+Dsc_tipo_linha = {"1":"Móvel","2":"Fixo","3":"Voip","4":"Fibra","5":"WTTX"}
+Dsc_segmento = {"1":"Controle","2":"Pós-Págo","3":"Pré-pago","4":"Express","5":"Digital","6":"SMB","7":"Wi-Fi Carros"}
+Dsc_subsegmento = {"1":"Consumer","2":"Corporativo","3":"SMB Corp"}
+
+#variaveis
+
+ChannelNname = mensagem['channel']['name']
+ChannelDeviceOS = mensagem['channel']['deviceOS']
+ChannelDeviceManufacturer = mensagem['channel']['deviceManufacturer']
+ChannelDeviceModel = mensagem['channel']['deviceModel']
+ChannelAppVersion = mensagem['channel']['appVersion']
+EventStatus = mensagem['event-status']
+EventLabel = mensagem['event-label']
+EventCategory = mensagem['event-category']
+UserSubSegment = mensagem['user']['subSegment']
+UserLoginType = mensagem['user']['loginType']
+UserLogin = mensagem['user']['login']
+UserPlanName = mensagem['user']['planName']
+UserLineType = mensagem['user']['lineType']
+UserSegment = mensagem['user']['segment']
+UserPlanCode = mensagem['user']['planCode']
+EventDate = mensagem['event-date']
+UserIP = mensagem['userIp']
+#saida de dados
+print("Log estruturado: ")
+print(f'Channel.name..............: {ChannelNname}')
+print(f'Channel.deviceOS..........: {ChannelDeviceOS}')
+print(f'Channel.deviceManufacturer: {ChannelDeviceManufacturer}')
+print(f'Channel.deviceModel.......: {ChannelDeviceModel}')
+print(f'Channel.appVersion........: {ChannelAppVersion}')
+print(f'Event Status..............: {EventStatus}')
+print(f'Event Label...............: {EventLabel}')
+print(f'Event Category............: {EventCategory}')
+print(f'User.subSegment...........: {UserSubSegment}')
+print(f'User.loginType............: {UserLoginType}')
+print(f'User.login................: {UserLogin}')
+print(f'User.planName.............: {UserPlanName}')
+print(f'User.lineType.............: {UserLineType}')
+print(f'User.segment..............: {UserSegment}')
+print(f'User.planCode.............: {UserPlanCode}')
+print(f'Event-Date................: {EventDate}')
+print(f'UserIP....................: {UserIP}')
+print("-"*60)
+try:
+  print("Como deve aparecer no Dashboard de Métricas: ")
+  print(f"Dsc_canal..............: {Dsc_canal[ChannelNname]} ")
+  print(f"Dsc_categoria_evento...: {Dsc_categoria_evento[EventCategory]} ")
+  print(f"Num_telefone...........: {UserLogin} ")
+  print(f"Dat_evento.............: {EventDate} ")
+  print(f"Dsc_tipo_cliente.......: {Dsc_tipo_cliente[UserLoginType]} ")
+  print(f"Dsc_tipo_linha.........: {Dsc_tipo_linha[UserLineType]} ")
+  print(f"Dsc_segmento...........: {Dsc_segmento[UserSegment]} ")
+  print(f"Dsc_subsegmento........: {Dsc_subsegmento[UserSubSegment]} ")
+  print(f"Dsc_plano..............: {UserPlanName} ")
+  print(f"Dsc_evento.............: {EventLabel} ")
+  print(f"Dsc_sistema_operacional: {ChannelDeviceOS} ")
+  print(f"Dsc_versao_aplicativo..: {ChannelAppVersion} ")
+  print("-"*60)
+  print("Consulta SAS: ")
+  print("""SELECT Num_telefone,
+                    dat_evento,
+                    Dsc_evento,
+                    Dsc_status,
+                    Dsc_plano,
+                    Dsc_sistema_operacional,
+                    Dsc_canal,
+                    Dsc_versao_aplicativo,
+                    Dsc_oferta,
+                    Dsc_motivo_erro,
+                    Dsc_tipo_cliente""")
+  print("from fact.vw_CX_PWEB_APP_MEU_TIM")
+  print("where dat_ref_particao =", EventDate)
+  print(f"AND upper(dsc_categoria_evento) = '{Dsc_categoria_evento[EventCategory]}'")
+  print(f"AND Dsc_canal = '{Dsc_canal[ChannelNname]}'")
+  print(f"AND Num_telefone like '{UserLogin}'")
+  print("-"*60)
+except:
+  print("Verifique os parâmetros passados no log")
+
